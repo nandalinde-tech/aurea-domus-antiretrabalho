@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Checklist — Áurea Domus</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f5f4f0;min-height:100vh;padding:1.5rem 1rem}
+.wrap{max-width:680px;margin:0 auto}
+h1{font-size:20px;font-weight:500;color:#0C447C;margin-bottom:2px}
+.sub{font-size:13px;color:#888780;margin-bottom:1.25rem}
+.top-bar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem}
+.btn-obras{background:none;border:0.5px solid #B5D4F4;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px;color:#0C447C;white-space:nowrap}
+.btn-obras:hover{background:#E6F1FB}
+.sync-badge{font-size:11px;padding:3px 8px;border-radius:20px;margin-left:6px;vertical-align:middle;display:inline-block}
+.sync-ok{background:#EAF3DE;color:#3B6D11}
+.sync-no{background:#FAECE7;color:#993C1D}
+.sync-wait{background:#F1EFE8;color:#5F5E5A}
+.cards{display:flex;gap:10px;margin-bottom:1.25rem}
+.card{flex:1;border-radius:10px;padding:12px 14px}
+.card .label{font-size:11px;margin-bottom:2px}
+.card .val{font-size:20px;font-weight:500}
+.progress-bg{background:#e0ded8;border-radius:8px;height:6px;margin-bottom:1.5rem}
+.progress-fill{height:100%;border-radius:8px;transition:width 0.4s}
+.obra-banner{background:#E6F1FB;border-radius:10px;padding:10px 14px;margin-bottom:1.25rem;display:flex;align-items:center;gap:10px}
+.obra-banner .nome{font-weight:500;color:#0C447C;font-size:15px;flex:1}
+.obra-banner button{font-size:12px;color:#185FA5;background:none;border:none;cursor:pointer}
+.cat-block{border:0.5px solid #D3D1C7;border-radius:12px;margin-bottom:12px;overflow:hidden}
+.cat-header{width:100%;display:flex;align-items:center;gap:10px;padding:12px 16px;border:none;cursor:pointer;text-align:left}
+.cat-header .titulo{flex:1;font-weight:500;font-size:15px}
+.cat-header .badge{font-size:12px;border-radius:20px;padding:2px 10px;border-width:1px;border-style:solid}
+.cat-body{background:#fff;padding:8px 16px 12px}
+.item-row{padding:8px 0}
+.item-row:not(:last-child){border-bottom:0.5px solid #e0ded8}
+.item-inner{display:flex;align-items:flex-start;gap:10px}
+.item-inner input[type=checkbox]{margin-top:3px;width:18px;height:18px;cursor:pointer;flex-shrink:0}
+.item-label{flex:1;font-size:14px;line-height:1.5;color:#2C2C2A}
+.item-label.marcado{color:#B4B2A9;text-decoration:line-through}
+.btn-nota{background:none;border:none;cursor:pointer;font-size:15px;flex-shrink:0;padding:0 2px}
+textarea.nota-input{display:block;width:100%;margin-top:6px;font-size:13px;padding:6px 10px;border-radius:6px;resize:vertical;min-height:56px;outline:none;font-family:system-ui,sans-serif}
+.nota-display{margin-top:4px;margin-left:28px;font-size:12px;color:#5F5E5A;background:#F1EFE8;border-radius:6px;padding:4px 10px}
+.btn-reset{margin-top:8px;font-size:13px;color:#993C1D;background:none;border:0.5px solid #993C1D80;border-radius:8px;padding:6px 16px;cursor:pointer}
+.empty-state{text-align:center;padding:3rem 1rem;color:#888780}
+.btn-criar-first{padding:10px 24px;border-radius:8px;background:#0C447C;color:#fff;border:none;cursor:pointer;font-size:14px}
+.obras-header{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem}
+.btn-back{background:none;border:none;cursor:pointer;font-size:20px;color:#0C447C;padding:0 4px}
+.obras-header h2{font-size:18px;font-weight:500;color:#0C447C}
+.nova-obra-row{display:flex;gap:8px;margin-bottom:1.5rem}
+.nova-obra-row input{flex:1;padding:8px 12px;border-radius:8px;border:0.5px solid #B5D4F4;font-size:14px;outline:none;font-family:system-ui,sans-serif}
+.btn-criar{padding:8px 18px;border-radius:8px;background:#0C447C;color:#fff;border:none;cursor:pointer;font-size:14px;font-weight:500}
+.obra-card{border:0.5px solid #D3D1C7;border-radius:12px;padding:12px 16px;margin-bottom:10px;background:#fff}
+.obra-card.ativa{background:#E6F1FB;border-color:#B5D4F4}
+.obra-acoes{display:flex;align-items:center;gap:10px}
+.obra-info{flex:1;cursor:pointer}
+.obra-info .nome-obra{font-weight:500;font-size:15px;color:#2C2C2A}
+.obra-info .prog{font-size:12px;margin-top:2px}
+.obra-prog-bg{margin-top:5px;background:#e0ded8;border-radius:4px;height:4px}
+.obra-prog-fill{height:100%;border-radius:4px}
+.btn-icon{background:none;border:none;cursor:pointer;font-size:16px;padding:4px}
+.renomear-row{display:flex;gap:8px}
+.renomear-row input{flex:1;padding:6px 10px;border-radius:6px;border:0.5px solid #B5D4F4;font-size:14px;outline:none;font-family:system-ui,sans-serif}
+.btn-salvar-ren{padding:6px 14px;border-radius:6px;background:#0C447C;color:#fff;border:none;cursor:pointer;font-size:13px}
+.btn-cancel-ren{padding:6px 10px;border-radius:6px;background:none;border:0.5px solid #D3D1C7;cursor:pointer;font-size:13px;color:#5F5E5A}
+.no-obras{color:#888780;font-size:14px;text-align:center;margin-top:2rem}
+.loading{text-align:center;padding:3rem 1rem;color:#888780;font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="loading">🔄 Conectando ao banco de dados...</div></div>
+
+<!-- Firebase CDN compatível com todos os navegadores incluindo iOS Safari -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyDuzmx32CQ-RUqncJbfXufz1eIPkx655uk",
+  authDomain: "aurea-domus-antiretrabalho.firebaseapp.com",
+  databaseURL: "https://aurea-domus-antiretrabalho-default-rtdb.firebaseio.com",
+  projectId: "aurea-domus-antiretrabalho",
+  storageBucket: "aurea-domus-antiretrabalho.firebasestorage.app",
+  messagingSenderId: "293030830448",
+  appId: "1:293030830448:web:d83e90c19559bae4a96fb5"
+});
+
+var db = firebase.database();
+
+var categorias = [
+  { id:"arcond", icon:"❄️", titulo:"Ar-condicionado", cor:"#0C447C", corBg:"#E6F1FB",
+    itens:["Verificar paredes candidatas: ausência de vigas no alto, fundos de marcenaria","Prever circuito dedicado no quadro elétrico desde o projeto elétrico","Definir local das máquinas externas (condensadoras)","Garantir ao menos 40 cm livres entre caixa de passagem e forro de gesso"] },
+  { id:"cozinha", icon:"🍳", titulo:"Cozinha", cor:"#3B6D11", corBg:"#EAF3DE",
+    itens:["Coifa: prever ponto elétrico e conferir voltagem","Filtro: prever pontos elétrico e hidráulico","Lava-louças: prever elétrico, hidráulico, esgoto — alinhar com marcenaria e marmoraria","Geladeira: prever ponto elétrico e hidráulico, verificar espaços disponíveis","Fogão: prever ponto elétrico e ponto de gás — alinhar com marcenaria e marmoraria","Micro-ondas: prever ponto elétrico","Forno: prever ponto elétrico dedicado","Confirmar eletrodomésticos escolhidos antes de executar marcenaria e marmoraria"] },
+  { id:"hidraulica", icon:"🚿", titulo:"Acionadores hidráulicos", cor:"#185FA5", corBg:"#E6F1FB",
+    itens:["Definir tipo de torneiras: monocomando ou duplo comando","Definir acionador de chuveiros: monocomando ou duplo comando","Definir torneiras de pia ou de parede (monitorar produção das bancadas)"] },
+  { id:"gas", icon:"🔥", titulo:"Instalação de gás", cor:"#993C1D", corBg:"#FAECE7",
+    itens:["Definir tipo e localização dos pontos de gás antes da execução","Prever passagem para fogão, forno e churrasqueira","Alinhamento com obra civil e acabamentos"] },
+  { id:"internet", icon:"🌐", titulo:"Rede estruturada", cor:"#533AB7", corBg:"#EEEDFE",
+    itens:["Usar mangueiras de no mínimo 1\" para infraestrutura","Mangueira deve ligar central de rede (caixa 20×20) até ponto de fixação do roteador Wi-Fi"] },
+  { id:"outros", icon:"📋", titulo:"Outros itens de atenção", cor:"#5F5E5A", corBg:"#F1EFE8",
+    itens:["Churrasqueira e/ou coifa: prever infraestrutura elétrica e de gás","Biometria: prever eletroduto para cabeamento","Campainha: prever mangueiras elétricas","CFTV: prever eletrodutos e pontos de energia","Alimentações especiais: cortinas, toldos, casa de máquinas, etc."] }
+];
+
+var totalItens = categorias.reduce(function(a,c){return a+c.itens.length},0);
+
+var state = {
+  tela:"checklist", obras:{}, obraId:null,
+  estado:{}, notas:{}, online:true,
+  expandido:{}, editandoNota:null,
+  novaObra:"", renomear:null, renomearVal:""
+};
+categorias.forEach(function(c){ state.expandido[c.id]=true; });
+
+var obraListener = null;
+
+function esc(s){
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+function pctCor(p){ return p===100?"#3B6D11":p>=60?"#185FA5":"#993C1D"; }
+function pctLabel(p){ return p===100?"Concluído ✓":p>=60?"Em andamento":"Pendente"; }
+
+function saveObraData(){
+  if(!state.obraId) return;
+  db.ref("obras/"+state.obraId+"/data").set({estado:state.estado, notas:state.notas});
+}
+
+function saveObrasList(){
+  db.ref("obrasList").set(state.obras);
+}
+
+function listenObra(id){
+  if(obraListener){ obraListener(); obraListener=null; }
+  if(!id) return;
+  var r = db.ref("obras/"+id+"/data");
+  r.on("value", function(snap){
+    if(snap.exists()){
+      var v=snap.val();
+      state.estado = v.estado||{};
+      state.notas = v.notas||{};
+      render();
+    }
+  });
+  obraListener = function(){ r.off("value"); };
+}
+
+function loadAll(){
+  var timeout = setTimeout(function(){
+    document.getElementById("app").innerHTML='<div class="loading">⚠️ Não foi possível conectar ao banco de dados.<br><br><small>Verifique sua conexão e <a href="" onclick="location.reload();return false;">tente novamente</a>.</small></div>';
+  }, 8000);
+
+  db.ref(".info/connected").on("value", function(snap){
+    state.online = snap.val() === true;
+    render();
+  });
+
+  db.ref("obrasList").once("value").then(function(snap){
+    clearTimeout(timeout);
+    state.obras = snap.exists() ? snap.val() : {};
+    var ids = Object.keys(state.obras);
+    if(ids.length) state.obraId = ids[0];
+    if(state.obraId){
+      db.ref("obras/"+state.obraId+"/data").once("value").then(function(d){
+        if(d.exists()){ var v=d.val(); state.estado=v.estado||{}; state.notas=v.notas||{}; }
+        render();
+        listenObra(state.obraId);
+        db.ref("obrasList").on("value", function(s){ if(s.exists()){ state.obras=s.val(); render(); }});
+      });
+    } else {
+      render();
+      db.ref("obrasList").on("value", function(s){ if(s.exists()){ state.obras=s.val(); render(); }});
+    }
+  }).catch(function(){
+    clearTimeout(timeout);
+    state.online=false;
+    render();
+  });
+}
+
+function setObraAtual(id){
+  if(obraListener){ obraListener(); obraListener=null; }
+  state.obraId=id; state.tela="checklist";
+  db.ref("obras/"+id+"/data").once("value").then(function(d){
+    if(d.exists()){ var v=d.val(); state.estado=v.estado||{}; state.notas=v.notas||{}; }
+    else{ state.estado={}; state.notas={}; }
+    render();
+    listenObra(id);
+  });
+}
+
+function toggleItem(key){
+  state.estado[key] = !state.estado[key];
+  saveObraData();
+  render();
+}
+
+function setNota(key,val){
+  state.notas[key]=val;
+  saveObraData();
+}
+
+function criarObra(){
+  var nome=state.novaObra.trim(); if(!nome)return;
+  var id="obra_"+Date.now();
+  state.obras[id]={id:id,nome:nome};
+  saveObrasList();
+  state.novaObra="";
+  setObraAtual(id);
+}
+
+function excluirObra(id){
+  if(!confirm("Excluir esta obra?"))return;
+  db.ref("obras/"+id).remove();
+  delete state.obras[id];
+  saveObrasList();
+  var ids=Object.keys(state.obras);
+  state.obraId=ids[0]||null;
+  state.estado={}; state.notas={};
+  if(state.obraId){ setObraAtual(state.obraId); }
+  else{ render(); }
+}
+
+function salvarRenomear(id){
+  var val=state.renomearVal.trim(); if(!val)return;
+  state.obras[id].nome=val;
+  saveObrasList();
+  state.renomear=null; render();
+}
+
+function resetChecklist(){
+  if(!confirm("Reiniciar checklist desta obra?"))return;
+  state.estado={}; state.notas={};
+  saveObraData(); render();
+}
+
+function setState(patch){
+  Object.keys(patch).forEach(function(k){ state[k]=patch[k]; });
+  render();
+}
+
+function renderObras(){
+  var obras=Object.values(state.obras);
+  var html='<div class="obras-header"><button class="btn-back" onclick="setState({tela:\'checklist\'})">←</button><h2>Gerenciar obras</h2></div>';
+  html+='<div class="nova-obra-row"><input id="inp-nova" type="text" placeholder="Nome da nova obra..." value="'+esc(state.novaObra)+'" oninput="state.novaObra=this.value" onkeydown="if(event.key===\'Enter\') criarObra()"/><button class="btn-criar" onclick="criarObra()">+ Criar</button></div>';
+  if(!obras.length) html+='<p class="no-obras">Nenhuma obra cadastrada ainda.</p>';
+  obras.forEach(function(o){
+    var ativa=state.obraId===o.id?"ativa":"";
+    if(state.renomear===o.id){
+      html+='<div class="obra-card '+ativa+'"><div class="renomear-row"><input id="inp-ren" type="text" value="'+esc(state.renomearVal)+'" oninput="state.renomearVal=this.value" onkeydown="if(event.key===\'Enter\') salvarRenomear(\''+o.id+'\')"/><button class="btn-salvar-ren" onclick="salvarRenomear(\''+o.id+'\')">Salvar</button><button class="btn-cancel-ren" onclick="setState({renomear:null})">✕</button></div></div>';
+    } else {
+      var m=state.obraId===o.id?Object.values(state.estado).filter(Boolean).length:0;
+      var p=Math.round((m/totalItens)*100);
+      var cor=pctCor(p);
+      html+='<div class="obra-card '+ativa+'"><div class="obra-acoes"><div class="obra-info" onclick="setObraAtual(\''+o.id+'\')"><div class="nome-obra">'+esc(o.nome)+'</div><div class="prog" style="color:'+cor+'">'+( state.obraId===o.id ? m+"/"+totalItens+" itens · "+p+"%" : "Toque para abrir" )+'</div><div class="obra-prog-bg"><div class="obra-prog-fill" style="width:'+(state.obraId===o.id?p:0)+'%;background:'+cor+'"></div></div></div><button class="btn-icon" onclick="setState({renomear:\''+o.id+'\',renomearVal:\''+esc(o.nome)+'\'})">✏️</button><button class="btn-icon" onclick="excluirObra(\''+o.id+'\')">🗑️</button></div></div>';
+    }
+  });
+  return html;
+}
+
+function renderChecklist(){
+  var obraAtual=state.obras[state.obraId];
+  var marcados=Object.values(state.estado).filter(Boolean).length;
+  var pct=Math.round((marcados/totalItens)*100);
+  var cor=pctCor(pct);
+  var badge=state.online?'<span class="sync-badge sync-ok">☁️ Sincronizado</span>':'<span class="sync-badge sync-no">⚠️ Sem conexão</span>';
+
+  if(!state.obraId) return '<div class="top-bar"><div><h1>Pontos de atenção em obra '+badge+'</h1><p class="sub">Checklist preventivo de retrabalho — Áurea Domus</p></div><button class="btn-obras" onclick="setState({tela:\'obras\'})">🏗️ Obras</button></div><div class="empty-state"><div style="font-size:32px;margin-bottom:12px">🏗️</div><p style="font-size:15px;margin-bottom:16px">Nenhuma obra selecionada.</p><button class="btn-criar-first" onclick="setState({tela:\'obras\'})">Criar primeira obra</button></div>';
+
+  var html='<div class="top-bar"><div><h1>Pontos de atenção em obra '+badge+'</h1><p class="sub">Checklist preventivo de retrabalho — Áurea Domus</p></div><button class="btn-obras" onclick="setState({tela:\'obras\'})">🏗️ Obras</button></div>';
+  html+='<div class="obra-banner"><span>📂</span><span class="nome">'+esc(obraAtual?obraAtual.nome:"")+'</span><button onclick="setState({tela:\'obras\'})">trocar →</button></div>';
+  html+='<div class="cards"><div class="card" style="background:#E6F1FB"><div class="label" style="color:#185FA5">Verificados</div><div class="val" style="color:#0C447C">'+marcados+' / '+totalItens+'</div></div><div class="card" style="background:#F1EFE8"><div class="label" style="color:#5F5E5A">Progresso</div><div class="val" style="color:#2C2C2A">'+pct+'%</div></div><div class="card" style="background:'+cor+'22"><div class="label" style="color:'+cor+'">Status</div><div class="val" style="color:'+cor+';font-size:16px">'+pctLabel(pct)+'</div></div></div>';
+  html+='<div class="progress-bg"><div class="progress-fill" style="width:'+pct+'%;background:'+cor+'"></div></div>';
+
+  categorias.forEach(function(cat){
+    var catM=cat.itens.filter(function(_,i){ return state.estado[cat.id+"_"+i]; }).length;
+    var ab=state.expandido[cat.id];
+    html+='<div class="cat-block"><button class="cat-header" style="background:'+cat.corBg+'" onclick="setState({expandido:Object.assign({},state.expandido,{\''+cat.id+'\':!state.expandido[\''+cat.id+'\']})})"><span style="font-size:18px">'+cat.icon+'</span><span class="titulo" style="color:'+cat.cor+'">'+cat.titulo+'</span><span class="badge" style="color:'+cat.cor+';background:'+cat.corBg+';border-color:'+cat.cor+'40">'+catM+'/'+cat.itens.length+'</span><span style="font-size:14px;color:'+cat.cor+'">'+(ab?"▲":"▼")+'</span></button>';
+    if(ab){
+      html+='<div class="cat-body">';
+      cat.itens.forEach(function(item,i){
+        var key=cat.id+"_"+i;
+        var marcado=!!state.estado[key];
+        var nk=key+"_nota";
+        var temNota=state.notas[nk];
+        var editando=state.editandoNota===nk;
+        html+='<div class="item-row"><div class="item-inner"><input type="checkbox" '+(marcado?"checked":"")+'  style="accent-color:'+cat.cor+'" onchange="toggleItem(\''+key+'\')"/><span class="item-label '+(marcado?"marcado":"")+'">'+esc(item)+'</span><button class="btn-nota" style="color:'+(temNota?cat.cor:"#B4B2A9")+'" onclick="setState({editandoNota:state.editandoNota===\''+nk+'\'?null:\''+nk+'\'})">✏️</button></div>';
+        if(editando) html+='<textarea class="nota-input" style="border:1px solid '+cat.cor+'60" oninput="setNota(\''+nk+'\',this.value)" onblur="setState({editandoNota:null})">'+esc(temNota||"")+'</textarea>';
+        if(temNota&&!editando) html+='<div class="nota-display">📌 '+esc(temNota)+'</div>';
+        html+='</div>';
+      });
+      html+='</div>';
+    }
+    html+='</div>';
+  });
+  html+='<button class="btn-reset" onclick="resetChecklist()">Reiniciar checklist desta obra</button>';
+  return html;
+}
+
+function render(){
+  document.getElementById("app").innerHTML = state.tela==="obras" ? renderObras() : renderChecklist();
+  if(state.tela==="obras"){
+    var el=document.getElementById(state.renomear?"inp-ren":"inp-nova");
+    if(el) setTimeout(function(){ el.focus(); },50);
+  }
+}
+
+window.addEventListener("online", function(){ state.online=true; render(); });
+window.addEventListener("offline", function(){ state.online=false; render(); });
+
+loadAll();
+</script>
+</body>
+</html>
